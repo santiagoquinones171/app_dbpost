@@ -1,0 +1,8 @@
+Set-Content .gitignore "# Ignorar entorno virtual
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+__pycache__/
+*.pyc
+.env"

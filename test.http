@@ -1,0 +1,14 @@
+### Consultar todos los productos
+GET http://127.0.0.1:8000/productos/prod_all
+
+###  Consultar producto por ID
+GET http://127.0.0.1:8000/productos/prod/11
+
+### Consultar todos los proveedores
+GET http://127.0.0.1:8000/productos/prov_all
+
+### Agregar producto
+GET http://127.0.0.1:8000/productos/add?id_prod=20&nom_prod=carro&proveedor=1
+
+###
+DELETE http://127.0.0.1:8000/productos/borrar/5
