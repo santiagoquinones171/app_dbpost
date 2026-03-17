@@ -1,86 +1,55 @@
-from sqlalchemy import Column, Integer, String
-from database import Base
-from fastapi import APIRouter, Query, Depends, HTTPException, status
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from modelos import modelo_producto
-from esquema import eschema
 
 router = APIRouter()
 
 
 @router.get("/")
 async def consultar():
-    return "Consultar Alumnos del Programa...."
+    return "API CBA Agro"
 
 
 @router.get("/prod_all")
-def get_users(db: Session = Depends(get_db)):
-    producto = db.query(modelo_producto.Producto).all()
-    return producto
+def get_productos(db: Session = Depends(get_db)):
+    productos = db.query(modelo_producto.Producto).all()
+    return productos
 
 
-@router.get("/prov_all")
-def get_proveedores(db: Session = Depends(get_db)):
-    proveedor = db.query(modelo_producto.Proveedor).all()
-    return proveedor
-
-
-@router.get("/prod/{prodId}")
-def get_id(prodId: int, db: Session = Depends(get_db)):
+@router.get("/prod/{id_producto}")
+def get_producto(id_producto: int, db: Session = Depends(get_db)):
     producto = db.query(modelo_producto.Producto).filter(
-        modelo_producto.Producto.id_prod == prodId).first()
-    if (producto):
+        modelo_producto.Producto.id_producto == id_producto).first()
+    if producto:
         return producto
-    else:
-        raise HTTPException(
-            status_code=404, detail=f"producto con id {prodId} no encontrado")
+    raise HTTPException(status_code=404, detail=f"Producto con id {id_producto} no encontrado")
 
 
-@router.get("/add")
-def crearProducto(
-    id_prod: int,
-    nom_prod: str,
-    proveedor: int,
-    db: Session = Depends(get_db)
-):
-    productoAdd = modelo_producto.Producto(
-        id_prod=id_prod,
-        nombre=nom_prod,
-        id_prov=proveedor
-    )
-    db.add(productoAdd)
-    db.commit()
-    db.refresh(productoAdd)
-    return productoAdd
+@router.get("/categorias")
+def get_categorias(db: Session = Depends(get_db)):
+    categorias = db.query(modelo_producto.Categoria).all()
+    return categorias
 
 
-@router.put("/update/{id_prod}", response_model=eschema.productos)
-async def update_Prod(id_prod: int, producs: eschema.productos, db: Session = Depends(get_db)):
+@router.get("/usuarios")
+def get_usuarios(db: Session = Depends(get_db)):
+    usuarios = db.query(modelo_producto.Usuario).all()
+    return usuarios
+
+
+@router.get("/pedidos")
+def get_pedidos(db: Session = Depends(get_db)):
+    pedidos = db.query(modelo_producto.Pedido).all()
+    return pedidos
+
+
+@router.delete("/borrar/{id_producto}")
+def borrar_producto(id_producto: int, db: Session = Depends(get_db)):
     producto = db.query(modelo_producto.Producto).filter(
-        modelo_producto.Producto.id_prod == id_prod
-    ).first()
+        modelo_producto.Producto.id_producto == id_producto).first()
     if not producto:
-        raise HTTPException(
-            status_code=404, detail="Producto no encontrado....")
-    producto.id_prod = producs.id_prod
-    producto.nom_prod = producs.nom_prod
-    producto.proveedor = producs.proveedor
-    db.commit()
-    db.refresh(producto)
-    return producto
-
-
-# metodo borrado
-@router.delete("/borrar/{id_prod}")
-async def borrarProd(id_prod: int, db: Session = Depends(get_db)):
-    producto = db.query(modelo_producto.Producto).filter(
-        modelo_producto.Producto.id_prod == id_prod
-    ).first()
-    if not producto:
-        raise HTTPException(
-            status_code=404, detail="Producto no encontrado....")
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
     db.delete(producto)
     db.commit()
-    return f"El campo {id_prod} ha sido borrado"
+    return f"Producto {id_producto} eliminado"
