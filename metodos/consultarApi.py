@@ -17,7 +17,7 @@ def get_productos(db: Session = Depends(get_db)):
     return productos
 
 
-@router.get("/prod/{id_producto}")
+@router.get("/{id_producto}")
 def get_producto(id_producto: int, db: Session = Depends(get_db)):
     producto = db.query(modelo_producto.Producto).filter(
         modelo_producto.Producto.id_producto == id_producto).first()
